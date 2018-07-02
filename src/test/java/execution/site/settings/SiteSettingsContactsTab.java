@@ -8,6 +8,7 @@ import talkable.talkableSite.siteSettings.SiteSettingsPage;
 import util.EnvFactory;
 import util.PropertyLoader;
 import util.TestDataGenerator;
+import util.logging.Log;
 
 public class SiteSettingsContactsTab extends BaseTest {
 
@@ -29,6 +30,7 @@ public class SiteSettingsContactsTab extends BaseTest {
         String marketerEmail = "marketer"+csEmail;
         CommonScenarios.openSiteSettingsPage().openContactsTab();
         CommonScenarios.updateSiteSettingsContactsTab(csEmail,  csName,  technicalEmail,  rewardEmail,  marketerEmail );
+        Log.testPassed("Site setting updated");
     }
     @Test
     public void discardSiteSettingsContactChanges(){
@@ -42,5 +44,6 @@ public class SiteSettingsContactsTab extends BaseTest {
         CommonScenarios.discardUnsavedchanges();
 
         CommonScenarios.assertDiscardedChangesSiteSettigsContactsTab(expectedEmail);
+        Log.testPassed("Test PAASED");
     }
 }
