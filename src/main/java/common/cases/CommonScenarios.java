@@ -16,6 +16,7 @@ import talkable.talkableSite.campaign.pages.multiCampaignEditor.PageMultiCampaig
 import talkable.talkableSite.campaignsPage.PageCampaigns;
 import talkable.talkableSite.campaignsPage.Table;
 import talkable.talkableSite.customerServicePortal.personLookup.PersonLookupPage;
+import talkable.talkableSite.integrationPage.IntegrationPage;
 import talkable.talkableSite.reports.newAffiliateMember.PageNewAffiliateMember;
 import talkable.talkableSite.reports.purchases.createNewPurchasePage.CreateNewPurchasePage;
 import talkable.talkableSite.createNewCampaignPage.CreateNewCampaignPage;
@@ -32,10 +33,12 @@ import talkable.userRegistration.chosePlatformPage.ChosePlatformPage;
 import talkable.userRegistration.createAccountPage.CreateAccountPage;
 import util.DriverConfig;
 import util.EnvFactory;
+import util.TestDataGenerator;
 import util.logging.Log;
 
 import static talkable.talkableSite.campaignsPage.Table.Status.DISABLED;
 import static talkable.talkableSite.campaignsPage.Table.Status.LIVE;
+import static talkable.userRegistration.chosePlatformPage.ChosePlatformPage.PlatformType.OTHER;
 
 /*Class to allocate common scenarios in Talkable.
  * */
@@ -43,6 +46,7 @@ public class CommonScenarios {
 
     private static final String liveStatusActive = "Status: Live";
     private static final String liveStatusTest = "Status: Test";
+    private static final String liveStatusDisabled = "Status: Disabled";
 
     /***
      *Scenario to login into Talkable
@@ -53,12 +57,48 @@ public class CommonScenarios {
      * */
     public static Header login(String email, String password) {
         HomePage homePage = new HomePage();
-        LoginPage loginPage = homePage.clickLoginButton();
-
-//        Header header = loginPage.submitLoginForm(email, password);
-//        Log.logRecord("User logged into Talkable. Email = <" + email + ">");
-//        return header;
+        homePage.clickLoginButton();
         return submitLoginForm(email, password);
+    }
+
+    /***
+     *Scenario to login and create new Site. And create test account If it is not yet created on the env.
+     * Precondition: Talkable home page should be opened
+     * 1. Click 'Login' button --> Login page is opened.
+     * 2. Populate login and password and click Login.
+     * 3. Verify if user logged.
+     *      If yes --> Create new Site.
+     *      else --> register new account with site
+     * Post-condition: User logged to Talkable. New site is created. Header should be available for further actions.
+     * */
+    public static Header loginAndCreateNewSite(String email, String password){
+        //data:
+        String defaultSite = "automation-site-" + TestDataGenerator.getRandomId();
+        String defaultUrl = "www." + defaultSite + ".com";
+
+        try{
+            login(email, password);
+            createNewSite(defaultSite, defaultUrl);
+        }catch (AssertionError e){
+            //verify error message:
+            Assert.assertEquals(
+                    new LoginPage().getTopErrorMessageString(),
+                    "Email/Password combination is not valid",
+                    "FAILED: Incorrect error message on the login page."
+            );
+            Log.logRecord("User <" + email + "> is not yet registered on <" + EnvFactory.getEnvType() + ">. Registration is started...");
+            DriverConfig.getDriver().navigate().to(
+                    EnvFactory.getRegistrationURL()
+            );
+            registerNewAccountWithSite(
+                    email,
+                    password,
+                    defaultSite,
+                    defaultUrl,
+                    OTHER
+            );
+        }
+        return new Header();
     }
 
     public static Header submitLoginForm(String email, String password){
@@ -111,7 +151,7 @@ public class CommonScenarios {
         try {
             return new SiteDashboardPage().verifySiteName(siteName);
         }catch (AssertionError e){
-            Log.debagRecord("Site Dashboard is not opened when site is switched. Verifying  integration instruction page...");
+            Log.debagRecord("Site Dashboard is not opened when site is switched. Verifying  integrationPage instruction page...");
             new IntegrationInstructionPage().dontShowItAgain();
             SiteDashboardPage dashboardPage = new SiteDashboardPage().verifySiteName(siteName);
             Log.debagRecord("Integration instruction page is closed.");
@@ -147,11 +187,25 @@ public class CommonScenarios {
         return new SiteDashboardPage();
     }
 
+    //method modified as temp workaround for old CSP:
     public static PersonLookupPage openCustomerServicePortal(){
         PersonLookupPage page = new Header().openCustomerServicePortal();
-        Log.logRecord("Customer Service Portal is opened. (Person Lookup page is displayed)");
+//        new Header().openOldCustomerServicePortal();
+//        String oldCspUrl = DriverConfig.getDriver().getCurrentUrl();
+//        String newCspUrl = oldCspUrl + "_portal";
+//        DriverConfig.getDriver().navigate().to(newCspUrl);
+//        PersonLookupPage page = new PersonLookupPage();
+        Log.logRecord("New Customer Service Portal is opened. (Person Lookup page is displayed)");
         return page;
     }
+
+    //correct method with method for
+
+//    public static PersonLookupPage openCustomerServicePortal(){
+//        PersonLookupPage page = new Header().openCustomerServicePortal();
+//        Log.logRecord("Customer Service Portal is opened. (Person Lookup page is displayed)");
+//        return page;
+//    }
 
 
 
@@ -208,9 +262,11 @@ public class CommonScenarios {
         return page;
     }
 
-//    public static String getCampaignNameFromRulesPage(){
-//        return new PageCampaignRules().getCampaignName();
-//    }
+    public static void setCampaignNameAndDescriptionOnRulesPage(String cName, String cDescription){
+        setCampaignNameOnRulesPage(cName);
+        setCampaignDescriptionOnRulesPage(cDescription);
+//        new PageCampaignRules().waitTillSaveMsgDisappeared();
+    }
 
     public static void setCampaignDescriptionOnRulesPage(String campaignDesc){
         PageCampaignRules page = new PageCampaignRules().setCampaignDescription(campaignDesc);
@@ -227,6 +283,7 @@ public class CommonScenarios {
         rulesPage.setDeadlineDates(advocateOfferDeadlineDate, adOfferEndTime, friendDeadlineDate, frOfferEndTime);
         assertDeadlinesOnRulesPage(advocateOfferDeadlineDate, adOfferEndTime, friendDeadlineDate, frOfferEndTime);
         Log.logRecord("Friend deadline date and time have been changed to " + friendDeadlineDate + ", " + frOfferEndTime + "on Campaign Rules page");
+//        new PageCampaignRules().waitTillSaveMsgDisappeared();
     }
 
     public static void assertDeadlinesOnRulesPage(String advocateOfferDeadlineDate, String adOfferEndTime, String friendDeadlineDate, String frOfferEndTime){
@@ -268,11 +325,14 @@ public class CommonScenarios {
                                           PageCampaignRules.DiscountType discountType,
                                           PageCampaignRules.CouponCodeType couponCodeType
                                           ){
-        new PageCampaignRules().createNewIncentive(
-                incentiveType,
-                rewardAmount,
-                discountType,
-                couponCodeType);
+        new PageCampaignRules()
+                .createNewIncentive(
+                        incentiveType,
+                        rewardAmount,
+                        discountType,
+                        couponCodeType)
+//                .waitTillSaveMsgDisappeared()
+        ;
     }
 
     /***
@@ -304,6 +364,11 @@ public class CommonScenarios {
         return detailsPage.campaignNavigationMenu.getCampaignName();
     }
 
+    public static void openCampaignsPageAndCreateCampaign(CampaignType campaignType, CampaignPlacement placement){
+        openCampaignsPage();
+        createNewCampaignFromCampaignsPage(campaignType, placement);
+    }
+
 //    /***
 //     * Scenario to initiate campaign creation from Campaigns Page..
 //     * Precondition: Header should be available.
@@ -326,8 +391,31 @@ public class CommonScenarios {
         //Launch Campaign Page is opened
         CampaignDetailsPage campaignDetailsPage = launchCampaignPage.launchCampaign();
         //check Campaign Status
-        Assert.assertEquals(campaignDetailsPage.campaignNavigationMenu.getCampaignStatus(), liveStatusActive);
-        Log.logRecord("Campaign is launched. Campaign Name = " + campaignDetailsPage.campaignNavigationMenu.getCampaignName());
+        return assertCampaignStatusFromNavigationMenu(LIVE);
+    }
+
+    public static void launchIntegratedCampaign(){
+        new CampaignNavigationMenu()
+                .clickLaunchButton()
+                .launchIntegratedCampaign();
+        assertCampaignStatusFromNavigationMenu(LIVE);
+    }
+
+    public static CampaignDetailsPage assertCampaignStatusFromNavigationMenu(Table.Status status){
+        String expectedStatus = "";
+        switch (status){
+            case LIVE:
+                expectedStatus = liveStatusActive;
+                break;
+            case DISABLED:
+                expectedStatus = liveStatusDisabled;
+                break;
+            case TEST:
+                expectedStatus = liveStatusTest;
+                break;
+        }
+        Assert.assertEquals(new CampaignNavigationMenu().getCampaignStatus(), expectedStatus);
+        Log.logRecord( "Campaign (name = " + new CampaignNavigationMenu().getCampaignName() + ") has status <" + expectedStatus + ">.");
         return new CampaignDetailsPage();
     }
 
@@ -361,13 +449,13 @@ public class CommonScenarios {
      * Post-condition: IntegrationInstructionPage is opened.
      * Returns: user email.
      * */
-    public static IntegrationInstructionPage registerNewUserWithSite(String email, String password, String siteName, String siteUrl, ChosePlatformPage.PlatformType platformType) {
+    public static IntegrationInstructionPage registerNewAccountWithSite(String email, String password, String siteName, String siteUrl, ChosePlatformPage.PlatformType platformType) {
         CreateAccountPage createAccountPage = new ChosePlatformPage().selectPlatform(platformType);
         IntegrationInstructionPage integrationInstructionPage = createAccountPage.populateAndSubmitForm(email, password, siteName, siteUrl);
 //        Verify that site is created:
 //        IntegrationInstructionPage integrationInstructionPage = new IntegrationInstructionPage();
         Assert.assertEquals(getSiteNameFromHeader(), siteName);
-        Log.logRecord("New user is registered. User name = <" + email + ">. Site = <" + siteName + ">");
+        Log.logRecord("New Account is registered. User name = <" + email + ">. Site = <" + siteName + ">");
 
         return integrationInstructionPage;
     }
@@ -404,6 +492,10 @@ public class CommonScenarios {
 
     public static CampaignPlacement getCampaignPlacementFromNavigationMenu(){
         return new CampaignNavigationMenu().getCampaignPlacement();
+    }
+
+    public static void openSiteIntegrationPage(){
+        new Header().openMenu().clickIntegration();
     }
 
 
@@ -540,6 +632,20 @@ public class CommonScenarios {
         Log.logRecord("Site Settings Basic Tab updated");
 
     }
+
+    public static void setUrlAndPlatformOnSiteSettings(String url, String platform){
+        String currentUrl = new SiteSettingsBasicTab().getSiteURL();
+        String currentPlatform = new SiteSettingsBasicTab().getPlatform();
+        if(!currentUrl.equals(url) || !currentPlatform.equals(platform)) {
+            new SiteSettingsBasicTab()
+                    .populateUrl(url)
+                    .selectPlatform(platform)
+                    .updateChanges();
+        }else {
+            Log.logRecord("Site platform and url have been already populated by values: platform = <" + platform + ">, url = <" + url + ">");
+        }
+    }
+
     public static void populateSiteBasicNegativeTest(String siteName, String siteID, String siteURL, String platform){
         new SiteSettingsBasicTab().populate(siteName, siteID, siteURL);
         new SiteSettingsBasicTab().selectPlatform(platform);
@@ -614,6 +720,19 @@ public class CommonScenarios {
                 .openIntegrationSettingsTab()
                 .getApiKey();
         return new Site().setData(siteID, apiKey);
+    }
+
+
+    public static IntegrationPage installShopifyApp(String shopifyUser, String passwrd){
+        IntegrationPage page = new IntegrationPage()
+                .installShopifyApp()
+                .enterCredentialToIntegrateTalkable(shopifyUser, passwrd);
+        Assert.assertEquals(
+                page.getWelcomeMsg(),
+                "Integration Is Completed",
+                "FAILED: Welcome Integration message is not displayed on Integration page when shopify app was installed.");
+        Log.logRecord("Shopify App is installed.");
+        return page;
     }
 
 

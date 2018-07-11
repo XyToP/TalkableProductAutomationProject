@@ -102,12 +102,6 @@ public class Log {
         return msg;
     }
 
-    public static String alertAccepted(){
-        String msg = "LOG: Click OK in Alert";
-        System.out.println(msg);
-        return msg;
-    }
-
     public static String campaignDeactivated(String name){
         String msg = "LOG: Campaign has been deactivated. Campaign Name: " + name;
         System.out.println(msg);

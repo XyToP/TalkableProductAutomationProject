@@ -33,7 +33,7 @@ public class CreateNewUserWithSite extends BaseTest{
     //Check that new site is created
     @Test
     public void test1_register(){
-        IntegrationInstructionPage page = CommonScenarios.registerNewUserWithSite(email, password, siteName, siteUrl, OTHER);
+        IntegrationInstructionPage page = CommonScenarios.registerNewAccountWithSite(email, password, siteName, siteUrl, OTHER);
         Assert.assertEquals(page.header.getSiteName(), siteName);
     }
 

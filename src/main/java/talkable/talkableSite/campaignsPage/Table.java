@@ -45,7 +45,7 @@ public class Table extends AbstractElementsContainer {
 
 
     private WebElement setTableWebElement(Status status){
-        long waitSecondsForElmntToBePresent = 3;
+        long waitSecondsForElmntToBePresent = 2;
         long sleepMillis = 500;
 
         try {
@@ -163,6 +163,11 @@ public class Table extends AbstractElementsContainer {
             if(!offers.getText().equals("0")){
                 Assert.fail("FAILED: You can not delete campaign with offers. Offers count: <" + offers.getText() + ">, Campaign name: <" + name.getText() + ">");
             }
+        }
+
+        String getName(){
+            return new Element(rowElement.findElement(By.xpath(".//*[contains(@class, 'campaign-teaser-name')]")))
+                    .getText();
         }
     }
 }

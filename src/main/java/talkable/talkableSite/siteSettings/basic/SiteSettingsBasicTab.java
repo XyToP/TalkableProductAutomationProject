@@ -30,22 +30,21 @@ public class SiteSettingsBasicTab extends SiteSettingsPage{
     public String getSiteName(){
         return new Element(elmntSiteName).getAttribute("value");
     }
+
     public String getSiteID(){
         return new Element(elmntSiteId).getAttribute("value");
     }
+
     public String getSiteURL(){
         return new Element(elmntSiteURL).getAttribute("value");
     }
-    public String getErrorMsg(){
-        /*Log.debagRecord("Start");
-        for (WebElement e :
-                driver.findElements(elmntErrorMsg)
-                ) {
-            System.out.println("  *** - " + e.getText());
-        }
 
-        Log.debagRecord("End");*/
+    public String getErrorMsg(){
         return new Element(elmntErrorMsg).getText();
+    }
+
+    public String getPlatform(){
+        return new SelectElement(elmntSitePlatform).getSelectedItemText();
     }
 
 
@@ -54,17 +53,23 @@ public class SiteSettingsBasicTab extends SiteSettingsPage{
     public void populate(String siteName, String siteId, String siteURL ){
         new Element(elmntSiteName, "Site Name field").clearAndSendKeys(siteName);
         new Element(elmntSiteId, "Site ID field").clearAndSendKeys(siteId);
-        new Element(elmntSiteURL, "Site URL field").clearAndSendKeys(siteURL);
+//        new Element(elmntSiteURL, "Site URL field").clearAndSendKeys(siteURL);
+        populateUrl(siteURL);
     }
-    public void  selectPlatform(String platform){
+
+    public SiteSettingsBasicTab populateUrl(String url){
+        new Element(elmntSiteURL, "Site URL field").clearAndSendKeys(url);
+        return new SiteSettingsBasicTab();
+    }
+
+    public SiteSettingsBasicTab selectPlatform(String platform){
         new SelectElement(elmntSitePlatform).searchAndSelect(platform);
+        return new SiteSettingsBasicTab();
     }
+
     public SiteSettingsBasicTab updateAll(String siteName, String siteId, String siteURL, String platform, String currency ){
-        //debag:
-        //new Element(elmntSaveButton).moveMouseOver();
-        //end
         populate(siteName, siteId, siteURL);
-        new SelectElement(elmntSitePlatform).searchAndSelect(platform);
+        selectPlatform(platform);
         new SelectElement(elmntSiteCurrency).selectByVisibleText(currency);
         updateChanges();
         return new SiteSettingsBasicTab();

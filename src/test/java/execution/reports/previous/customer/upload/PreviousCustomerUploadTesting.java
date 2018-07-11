@@ -7,9 +7,9 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import talkable.common.elements.pagination.Pagination;
+import talkable.talkableSite.headerFrame.Header;
 import talkable.talkableSite.reports.previousCustomersReport.PreviousCustomersReportPage;
 import util.EnvFactory;
-import util.TestDataGenerator;
 
 /*Link to test scenario: https://docs.google.com/spreadsheets/d/1ONGHch4nOJ28fGgNG4Hz3THlX1NWn8KxwM74fBSLngM/
  * */
@@ -17,29 +17,31 @@ public class PreviousCustomerUploadTesting extends BaseTest{
 //    private static final String fileName = "testDataForExistingCustomersReport.csv";
 
     @Test
-    public void test1_login(){
+    public void login(){
         driver.navigate().to(EnvFactory.getEnvUrl());
         CommonScenarios.acceptCookiesUsage();
-        CommonScenarios.login(EnvFactory.getReportsUser(), EnvFactory.getPassword());
+        CommonScenarios.loginAndCreateNewSite(EnvFactory.getReportsUser(), EnvFactory.getPassword());
     }
 
-
-    @Test(dependsOnMethods = "test1_login")
-    public void test2_createNewSiteAndOpenReportsPage(){
-        CommonScenarios
-                .createNewSite("ECR_" + TestDataGenerator.getRandomId(), "www.test.com")
-                .header.clickReportsButton()
+    @Test(dependsOnMethods = "login")
+    public void openExistingCustomerReport(){
+//        CommonScenarios
+//                .createNewSite("ECR_" + TestDataGenerator.getRandomId(), "www.test.com")
+//                .header.clickReportsButton()
+//                .openExistingCustomerReport();
+        new Header()
+                .clickReportsButton()
                 .openExistingCustomerReport();
     }
 
-    @Test(dataProvider = "getTestData", dependsOnMethods = "test2_createNewSiteAndOpenReportsPage")
-    public void test3_uploadFile(String fileName, String expectedProgress, String expectedUploadedEmails, String expectedStatus){
+    @Test(dataProvider = "getTestData", dependsOnMethods = "openExistingCustomerReport")
+    public void uploadFile(String fileName, String expectedProgress, String expectedUploadedEmails, String expectedStatus){
         ReportsScenarios
                 .previousCustomerUploadTesting(fileName, expectedProgress, expectedUploadedEmails, expectedStatus);
         driver.navigate().to("https://admin.talkable.com/sites/ecr-563089371/previous_customers");
     }
 
-    @Test(dependsOnMethods = "test3_uploadFile")
+    @Test(dependsOnMethods = "uploadFile")
     public void searchEmail(){
         PreviousCustomersReportPage report = new PreviousCustomersReportPage();
         String email = report.getFirstEmailValue();
@@ -50,7 +52,7 @@ public class PreviousCustomerUploadTesting extends BaseTest{
         Assert.assertEquals(report.getFirstEmailValue(), email, "FAILED: Incorrect email is returned");
     }
 
-    @Test(dependsOnMethods = "test3_uploadFile")
+    @Test(dependsOnMethods = "uploadFile")
     public void verifyPagination(){
         Pagination pagination = new PreviousCustomersReportPage()
                 .searchEmail("")

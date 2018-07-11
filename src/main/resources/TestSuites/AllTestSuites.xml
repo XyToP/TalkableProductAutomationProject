@@ -16,7 +16,7 @@
     <suite-file path="AccountAndSiteCreation.xml"/>
     <suite-file path="SiteSettingsTest.xml"/>
     <!--<suite-file path="CspTests.xml"/>-->
-
+    <suite-file path="IntegrationTests.xml"/>
 
 </suite>
 

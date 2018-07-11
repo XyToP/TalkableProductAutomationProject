@@ -1,6 +1,6 @@
 package util;
 
-import org.testng.Assert;
+import util.logging.Log;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -9,9 +9,10 @@ import java.util.Properties;
 public class PropertyLoader {
 
     private static final String PROP_FILE = "/application.properties";
-    //
+
     private static final String VOID_PROP_FILE = "/void.properties";
     private static final String PROD_PROP_FILE = "/prod.properties";
+    private static final String BASTION_PROP_FILE = "/bastion.properties";
 
     private PropertyLoader() {}
 
@@ -32,25 +33,33 @@ public class PropertyLoader {
     }
 
     public static String loadEnvProperty(String name){
-        Properties props;
+        String filePath = "";
         //property described in pom.xml  <test.environment>${env.NAME}</test.environment>
-        String env = getMavenEnvName();
-        if(env.equals("PROD")){
-            props = getPropertiesFile(PROD_PROP_FILE);
-            System.out.println("DEBAG: Property loaded from prod.properties file. Property name: <" + name + ">");
+        EnvFactory.EnvType env = EnvFactory.getEnvType();
+
+        switch (env){
+            case PROD:
+                filePath = PROD_PROP_FILE;
+                break;
+            case VOID:
+                filePath = VOID_PROP_FILE;
+                break;
+            case BASTION:
+                filePath = BASTION_PROP_FILE;
+                break;
         }
-        else {
-            props = getPropertiesFile(VOID_PROP_FILE);
-            System.out.println("DEBAG: Property loaded from void.properties file. Property name: <" + name + ">");
-        }
-        String value = "";
+        Properties props = getPropertiesFile(filePath);
+        Log.debagRecord("Property loaded from <"+ filePath+ "> file. Property name: <" + name + ">");
+
+        String propValue = "";
 
         if (name != null) {
             assert props != null;
-            value = props.getProperty(name);
+            propValue = props.getProperty(name);
         }
-        return value;
+        return propValue;
     }
+
 
     private static Properties getPropertiesFile(String fileName){
         Properties props = new Properties();
@@ -63,21 +72,6 @@ public class PropertyLoader {
         }
     }
 
-    public static String getMavenEnvName(){
-        //property described in pom.xml  <test.environment>${env.NAME}</test.environment>
-        //correct working:
-        String env = System.getProperty("test.environment");
-        //for local running of the project:
-//        String env = "VOID";
-//        String env = "PROD";
-//
-        System.out.println("LOG - PropertyLoader: Test is running on <" + env + "> environment");
-        if(env == null){
-            Assert.fail("ERROR: 'env' variable is null in PropertyLoader.getMavenEnvName(). Make sure that env.NAME is provided.");
-        }
-        return env;
-
-    }
 
 
 

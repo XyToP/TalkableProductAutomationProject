@@ -24,7 +24,7 @@ public class DriverConfig {
 
     /*The flag indicates whether the test will be executed on Local or Remote machine.
     !!! Please note always put the flag to TRUE before creation of pull request to origin/master !!!*/
-    private static final boolean remoteExecution = true;
+    private static final boolean remoteExecution = ExecutionVariables.remoteExecution();
 
     @Parameters()
     private WebDriver setNewLocalDriver()
@@ -54,6 +54,7 @@ public class DriverConfig {
 //        capabilities.setBrowserName("firefox");
 //        capabilities.setVersion("60.0");
         capabilities.setCapability("enableVNC", true);
+//        capabilities.setCapability("enableVideo", true);
 
         driver = null;
         URL url = null;

@@ -1,8 +1,13 @@
 <suite name="Editor Suite" preserve-order="true" group-by-instances="true">
-    <test name="Simple Editor" preserve-order="true" >
+    <test name="Simple Editor tests" preserve-order="true" >
         <classes>
-            <!--<class name="execution.editor.SimpleEditorTesting"/>-->
             <class name="execution.editor.SimpleEditorTesting_v2"/>
+        </classes>
+    </test>
+
+    <test name="HTML Editor tests" preserve-order="true" >
+        <classes>
+            <class name="execution.editor.HtmlEditorTesting"/>
         </classes>
     </test>
 

@@ -10,8 +10,8 @@ class ConfirmationPopup extends AbstractElementsContainer{
 
     private Element okButton = new Element(okLctr, "OK");
 
-    PendingReferralsPage confirm(){
+    ReferralsPage confirm(){
         okButton.click();
-        return new PendingReferralsPage();
+        return new ReferralsPage();
     }
 }

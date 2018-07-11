@@ -15,19 +15,22 @@ import static talkable.common.CampaignPlacement.FloatingWidget;
 import static talkable.common.CampaignPlacement.PostPurchase;
 import static talkable.common.CampaignType.AdvocateDashboard;
 import static talkable.common.CampaignType.Invite;
-import static talkable.talkableSite.campaignsPage.Table.Status.LIVE;
 import static talkable.talkableSite.campaignsPage.Table.Status.TEST;
 
 
 public class CampaignActionsTesting extends BaseTest{
 
+    private String user = PropertyLoader.loadProperty("talkable.user.campaignActionsTest");
+    private String pswrd = EnvFactory.getPassword();
+
     @Test
     public void login(){
         CommonScenarios.acceptCookiesUsage();
-        CommonScenarios.login(
-                PropertyLoader.loadProperty("talkable.user.campaignActionsTest"),
-                EnvFactory.getPassword()
-        );
+        CommonScenarios.loginAndCreateNewSite(user, pswrd);
+//        CommonScenarios.login(
+//                PropertyLoader.loadProperty("talkable.user.campaignActionsTest"),
+//                EnvFactory.getPassword()
+//        );
     }
 
     @Test(dependsOnMethods = "login")
@@ -36,7 +39,7 @@ public class CampaignActionsTesting extends BaseTest{
         String campaignDesc = "Some campaign description";
 
         CommonScenarios.openCampaignsPage();
-        CommonScenarios.deleteAllCampaignsWithStatus(LIVE);
+//        CommonScenarios.deleteAllCampaignsWithStatus(LIVE);
         CommonScenarios.createNewCampaignFromCampaignsPage(AdvocateDashboard, FloatingWidget);
         CommonScenarios.openCampaignRulesPage();
         CommonScenarios.setCampaignNameOnRulesPage(campaignName);
@@ -85,7 +88,7 @@ public class CampaignActionsTesting extends BaseTest{
 
         CommonScenarios.navigateToAdminUrl();
         CommonScenarios.openCampaignsPage();
-        CommonScenarios.deleteAllCampaignsWithStatus(TEST);
+//        CommonScenarios.deleteAllCampaignsWithStatus(TEST);
         CommonScenarios.createNewCampaignFromCampaignsPage(Invite, PostPurchase);
         CommonScenarios.openCampaignRulesPage();
         CommonScenarios.setCampaignNameOnRulesPage(campName);

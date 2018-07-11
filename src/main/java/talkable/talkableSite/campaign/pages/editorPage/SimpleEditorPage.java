@@ -14,12 +14,12 @@ public class SimpleEditorPage extends AbstractEditorPage{
     public CampaignNavigationMenuOnEditor campaignNavigationMenu = new CampaignNavigationMenuOnEditor();
     private LocalizationSidebar localizationSidebar;
     private ElmntSaveButton saveButton = new ElmntSaveButton();
-    private ElmntSelectedViewField elmntSelectedViewField = new ElmntSelectedViewField();
+//    private ElmntSelectedViewField elmntSelectedViewField = new ElmntSelectedViewField();
     private ElmntCopyButton copyButton = new ElmntCopyButton();
     private ElmntImagesButton imagesButton = new ElmntImagesButton();
     private ElmntColorButton colorButton = new ElmntColorButton();
     private ElmntConfigurationButton configurationButton = new ElmntConfigurationButton();
-    private PreviewFrame previewFrame = new PreviewFrame();
+
 
     public enum LocalizationType {COPY, IMAGES, COLOR, CONFIGURATION}
     private LocalizationType mode;
@@ -38,10 +38,6 @@ public class SimpleEditorPage extends AbstractEditorPage{
         switchTo(mode);
         localizationSidebar = new LocalizationSidebar(mode);
         this.mode = mode;
-    }
-
-    public String getElementTextFromPreviewFrame(By locator){
-        return previewFrame.getElementText(locator);
     }
 
 

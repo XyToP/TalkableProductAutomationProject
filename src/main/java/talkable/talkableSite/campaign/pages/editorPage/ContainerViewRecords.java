@@ -5,6 +5,7 @@ import abstractObjects.Element;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+import util.logging.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,34 +13,36 @@ import java.util.Objects;
 
 class ContainerViewRecords extends AbstractElementsContainer{
 
-    private Element containerElement = new Element(By.xpath("//ul[contains(@class, 'ac-editor-widget-navigation')]"));
-    private ArrayList<ElmntViewRecord> records = new ArrayList<>();
+    private static final By containerElmntLctr = By.xpath("//ul[contains(@class, 'ac-editor-widget-navigation')]");
+    private static final By recordsLctr = By.xpath("./div/li");
+    private static final By createNewViewLctr = By.xpath("//a[contains(@class, 'create-new-view')]");
+
+    private Element containerElement = new Element(containerElmntLctr);
+    private ArrayList<ElmntViewRecord> records;
+
 
     ContainerViewRecords(){
-        setRecords();
+        records = getRecords();
     }
 
-    private void setRecords(){
-        List<WebElement> webElements = containerElement.getWebElement().findElements(By.xpath("./div/li"));
+    private ArrayList<ElmntViewRecord> getRecords(){
+        List<WebElement> webElements = containerElement.getWebElement().findElements(recordsLctr);
+        ArrayList<ElmntViewRecord> arr = new ArrayList<>();
         for (WebElement webElement :
                 webElements) {
             ElmntViewRecord viewRecord = new ElmntViewRecord(new Element(webElement));
-            records.add(viewRecord);
+            arr.add(viewRecord);
         }
+        return arr;
     }
 
     public void selectViewByText(String viewName){
-        Objects.requireNonNull(getViewRecord(viewName)).viewName.click();
+        Objects.requireNonNull(findViewRecord(viewName)).viewName.click();
     }
 
-    public void selectByIndex(int index){
-        records.get(index - 1).viewName.click();
-    }
-
-
-    private ElmntViewRecord getViewRecord(String name){
-        for (ElmntViewRecord record : records) {
-            if(record.viewName.getText().equals(name)){
+    ElmntViewRecord findViewRecord(String name){
+        for (ElmntViewRecord record : getRecords()) {
+            if(record.getViewName().equals(name)){
                 return  record;
             }
         }
@@ -47,6 +50,51 @@ class ContainerViewRecords extends AbstractElementsContainer{
         return null;
     }
 
+    boolean isViewPresent(String name){
+        for (ElmntViewRecord record : records) {
+            if(record.getViewName().equals(name)){
+                return  true;
+            }
+        }
+        return false;
+    }
+
+    PopupNewViewWarning clickCreateNewView(){
+        new Element(createNewViewLctr, "Create New View Btn").click();
+        return new PopupNewViewWarning();
+    }
+
+
+    class ElmntViewRecord extends AbstractElementsContainer{
+
+        private By viewNameLctr = By.xpath(".//span[contains(@class, 'editor-menu-text')]");
+        private By isVisibleLctr = By.xpath(".//input[contains(@type, 'checkbox')]");
+        private By deleteIconLctr = By.xpath(".//a[@data-method='delete']");
+
+        private Element rowElement;
+        private Element viewName;
+
+        private ElmntViewRecord(Element rowElement){
+            this.rowElement = rowElement;
+            viewName = new Element(rowElement, viewNameLctr);
+        }
+
+        void clickIsVisible(){
+            new Element(
+                    rowElement.getWebElement().findElement(isVisibleLctr))
+                    .click();
+        }
+
+        private String getViewName(){
+            return new Element(rowElement, viewNameLctr).getText();
+        }
+
+        void delete(){
+            new Element(rowElement, deleteIconLctr).click();
+        }
+
+
+    }
 
 
 

@@ -1,7 +1,7 @@
 <suite name="Simple Test for each campaign type" preserve-order="true" group-by-instances="true">
     <test name="Simple Test" preserve-order="true" >
         <classes>
-            <class name="execution.simple.test.SimpleTestForAllCampaignTypes"/>
+            <class name="execution.integration.custom.CustomIntegrationTestForAllCampaignTypes"/>
         </classes>
     </test>
 

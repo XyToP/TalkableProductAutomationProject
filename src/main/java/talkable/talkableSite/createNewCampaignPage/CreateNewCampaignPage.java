@@ -19,7 +19,6 @@ public class CreateNewCampaignPage extends AbstractTalkableSitePage {
     }
 
     public CampaignDetailsPage createCampaign(CampaignType campaignType, CampaignPlacement placementType){
-        System.out.println("\r**** DEBAG-TEMP: createCampaign method start");
 
         DrivenElement campaignButton = getSelectCampaignButton(campaignType);
         campaignButton.click();

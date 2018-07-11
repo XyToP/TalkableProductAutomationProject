@@ -1,0 +1,7 @@
+# Ignore maven files:
+/target/*
+#
+/allure-results/*
+/.idea/*
+*.iml
+/src/main/java/util/ExecutionVariables.java

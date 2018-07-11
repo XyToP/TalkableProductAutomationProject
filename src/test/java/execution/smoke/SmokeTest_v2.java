@@ -4,12 +4,18 @@ package execution.smoke;
 import common.cases.ClientSiteScenarios;
 import common.cases.CommonScenarios;
 import execution.BaseTest;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.TimeoutException;
 import org.testng.Assert;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import util.EnvFactory;
 import util.PropertyLoader;
+import util.Screenshot;
 import util.TestDataGenerator;
 import util.logging.Log;
+
+import java.util.Arrays;
 
 import static talkable.common.CampaignPlacement.FloatingWidget;
 import static talkable.common.CampaignType.Invite;
@@ -20,6 +26,7 @@ import static talkable.talkableSite.campaign.pages.campaignRulesPage.PageCampaig
 import static talkable.talkableSite.campaign.pages.campaignRulesPage.PageCampaignRules.IncentiveType.FriendIncentive_NewCustomer;
 
 
+@Listeners(util.Listeners.class)
 public class SmokeTest_v2 extends BaseTest{
 
     private static final String SITE_URL = PropertyLoader.loadEnvProperty("test.sites.smoke.test");
@@ -35,6 +42,12 @@ public class SmokeTest_v2 extends BaseTest{
     * */
     @Test
     public void createAndActivateCampaign(){
+
+        //Test data:
+        String campaignDesc = "Campaign for smoke test";
+        String advocateOfferDeadlineDate = "10/18/2020";
+        String endTime = "05:48";
+        String friendDeadline = "10/21/2020";
 
         CommonScenarios.acceptCookiesUsage();
         //1. Login to Talkable.
@@ -60,17 +73,11 @@ public class SmokeTest_v2 extends BaseTest{
 
         // 4. Navigate to Rules page
         // 5. Modify Campaign name
-        CommonScenarios.openCampaignRulesPage();
-        CommonScenarios.setCampaignNameOnRulesPage(campaignName);
-
         // 6. Set Campaign description
-        String campaignDesc = "Campaign for smoke test";
-        CommonScenarios.setCampaignDescriptionOnRulesPage(campaignDesc);
+        CommonScenarios.openCampaignRulesPage();
+        CommonScenarios.setCampaignNameAndDescriptionOnRulesPage(campaignName, campaignDesc);
 
         // 7. Set Advocate/Friend Offer deadline
-        String advocateOfferDeadlineDate = "10/18/2020";
-        String endTime = "05:48";
-        String friendDeadline = "10/21/2020";
         CommonScenarios.setDeadlinesOnRulesPage(
                 advocateOfferDeadlineDate,
                 endTime,
@@ -78,8 +85,30 @@ public class SmokeTest_v2 extends BaseTest{
                 endTime);
 
         // 8. Add incentive (Type = Sign Up)
-        CommonScenarios.addNewIncentive(AdvocateSignupIncentive, 25, FixedAmount, MultiUse);
-        CommonScenarios.addNewIncentive(FriendIncentive_NewCustomer, 10, Percentage, MultiUse);
+        /*todo:The issue with 'Changes saved' notification should be investigated after adding of video recorder to the selenoid served.
+        For now the message is not returned on bastion when test is running on Selenoid. (For local execution works fine.)
+        Link to related JIRA task:
+
+        * */
+        try {
+            CommonScenarios.addNewIncentive(AdvocateSignupIncentive, 25, FixedAmount, MultiUse);
+        }catch (TimeoutException e){
+            System.out.println(" ----- DEBAG.Smoke_Test_v2.addNewIncentive ---- ");
+            System.err.println("DEBAG: Timeout exception were thrown during adding of incentive.");
+            System.err.println("Screenshot: " + new Screenshot().makeScreenshot());
+            System.err.println("  Exception message: \r\n" +  e.getMessage() + "\r\n" + Arrays.toString(e.getStackTrace()));
+            System.out.println(" ----- End DEBAG.Smoke_Test_v2 ---- ");
+        }
+
+        try {
+            CommonScenarios.addNewIncentive(FriendIncentive_NewCustomer, 10, Percentage, MultiUse);
+        }catch (TimeoutException e){
+            System.out.println(" ----- DEBAG.Smoke_Test_v2.addNewIncentive ---- ");
+            System.err.println("DEBAG: Timeout exception were thrown during adding of incentive.");
+            System.err.println("Screenshot: " + new Screenshot().makeScreenshot());
+            System.err.println("  Exception message: \r\n" +  e.getMessage() + "\r\n" + Arrays.toString(e.getStackTrace()));
+            System.out.println(" ----- End DEBAG.Smoke_Test_v2 ---- ");
+        }
 
         // 11. Launch Campaign
         CommonScenarios.launchCampaign();

@@ -19,18 +19,23 @@ import static talkable.talkableSite.campaign.pages.editorPage.SimpleEditorPage.L
 
 /*Link to test scenario: https://docs.google.com/spreadsheets/d/1jjxHr_cLNaSq3HVBgU_y6k_llNDpNyTZUoWPAJ9Aw20/edit
  * */
+
 public class SimpleEditorTesting_v2 extends BaseTest {
 
     private static final String siteName = PropertyLoader.loadProperty("sites.name.editorTesting");
     private String campaignDetailsPageUrl;
+    private String user = EnvFactory.getCommonUser();
+    private String pswrd = EnvFactory.getPassword();
 
     @Test
     public void loginAndCreateNewCampaign(){
         CommonScenarios.acceptCookiesUsage();
-        CommonScenarios.login(EnvFactory.getCommonUser(), EnvFactory.getPassword());
-        CommonScenarios.switchToSiteByVisibleText(siteName);
+        CommonScenarios.loginAndCreateNewSite(user, pswrd);
+//        CommonScenarios.login(EnvFactory.getCommonUser(), EnvFactory.getPassword());
+//        CommonScenarios.switchToSiteByVisibleText(siteName);
+//        CommonScenarios.openCampaignsPage();
+//        CommonScenarios.deleteAllCampaignsWithStatus(Table.Status.TEST);
         CommonScenarios.openCampaignsPage();
-        CommonScenarios.deleteAllCampaignsWithStatus(Table.Status.TEST);
         CommonScenarios.createNewCampaignFromCampaignsPage(Invite, Standalone);
         campaignDetailsPageUrl = driver.getCurrentUrl();
     }
@@ -51,7 +56,7 @@ public class SimpleEditorTesting_v2 extends BaseTest {
     }
 
     @Test(dependsOnMethods = "loginAndCreateNewCampaign"
-            , expectedExceptions = AssertionError.class)//scenarios is failed because of the defect https://talkable.atlassian.net/browse/PR-9336
+            , expectedExceptions = AssertionError.class) //scenarios is failed due to the defect https://talkable.atlassian.net/browse/PR-9523
     public void createNewPreset(){
         String presetName = "testPreset" + TestDataGenerator.getRandomId();
         driver.navigate().to(campaignDetailsPageUrl);
@@ -59,7 +64,7 @@ public class SimpleEditorTesting_v2 extends BaseTest {
         EditorScenarios.createNewPreset(presetName, " ");
         EditorScenarios.deletePresetOnHtmlEditor(presetName);
         Assert.assertEquals(
-                EditorScenarios.isPresetPreset(presetName),
+                EditorScenarios.isPresetPresent(presetName),
                 false,
                 "FAILED: View Preset is not deleted on Editor (Preset name = <" + presetName + ">)."
         );

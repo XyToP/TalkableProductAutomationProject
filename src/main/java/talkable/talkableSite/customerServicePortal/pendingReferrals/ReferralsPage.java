@@ -3,7 +3,6 @@ package talkable.talkableSite.customerServicePortal.pendingReferrals;
 import abstractObjects.Element;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
 import talkable.talkableSite.customerServicePortal.AbstractCustomerServicePortalPage;
 import talkable.talkableSite.customerServicePortal.personLookup.PersonInfoSection;
@@ -13,7 +12,7 @@ import util.logging.Log;
 
 import java.util.ArrayList;
 
-public class PendingReferralsPage extends AbstractCustomerServicePortalPage{
+public class ReferralsPage extends AbstractCustomerServicePortalPage{
 
     private static final By rowsLctr = By.xpath("//tr[@class='CSP-row']");
     private static final By pendingReferralsCountLctr = By.xpath("//h2");
@@ -23,14 +22,14 @@ public class PendingReferralsPage extends AbstractCustomerServicePortalPage{
     private Element pendingReferralsCount = new Element(pendingReferralsCountLctr);
 
 
-    public PendingReferralsPage(){
+    public ReferralsPage(){
         if(!pendingReferralsCount.getText().equals("Pending Referrals — 0")){
             getRows();
         }
     }
 
 
-    public PendingReferralsPage approveAllReferrals(){
+    public ReferralsPage approveAllReferrals(){
         if(pendingReferralsCount.getText().equals("Pending Referrals — 0")){
             Assert.fail("FAILED: 'Approve All' button is not available on Pending Referrals page when pending referral count = '0'");
         }
@@ -41,13 +40,14 @@ public class PendingReferralsPage extends AbstractCustomerServicePortalPage{
                 "Pending Referrals — 0",
                 5);
         Log.logRecord("All pending referrals were approved.");
-        return new PendingReferralsPage();
+        return new ReferralsPage();
     }
 
     public String getPendingReferralsCount(){
-        return pendingReferralsCount.getText().substring(20);
+        return pendingReferralsCount.getText().substring(13);
     }
 
+    @Deprecated
     public PersonInfoSection clickSeeDetailsForActionedReferral(){
         new Element(seeDetailsForActionedReferralLctr, "'See Details' link").click();
         return new PersonLookupPage().getPersonInfoSection();
@@ -75,29 +75,25 @@ public class PendingReferralsPage extends AbstractCustomerServicePortalPage{
     }
 
 
-    public PendingReferralsPage approveReferral(String advocateEmail){
-        String referralsCount = pendingReferralsCount.getText();
+    public ReferralDetailsPage approveReferral(String advocateEmail){
         findRowBy(advocateEmail).approve();
-        WaitFactory.getCustomWait(5, 500).until(
-                ExpectedConditions.invisibilityOfElementWithText(pendingReferralsCountLctr, referralsCount));
+        waitSaving();
         Log.logRecord("Referral was approved. Advocate email <" + advocateEmail + ">.");
-        return new PendingReferralsPage();
+        return new ReferralDetailsPage();
     }
 
-    public PendingReferralsPage voidReferral(String advocateEmail){
-        String referralsCount = pendingReferralsCount.getText();
+    public ReferralDetailsPage voidReferral(String advocateEmail){
         findRowBy(advocateEmail).voidReferral();
-        WaitFactory.getCustomWait(5, 500).until(
-                ExpectedConditions.invisibilityOfElementWithText(pendingReferralsCountLctr, referralsCount));
-        Log.logRecord("Referral was approved. Advocate email <" + advocateEmail + ">.");
-        return new PendingReferralsPage();
+        waitSaving();
+        Log.logRecord("Referral was voided. Advocate email <" + advocateEmail + ">.");
+        return new ReferralDetailsPage();
     }
 
 
 
     class ReferralRow{
-        private final By adEmailLctr = By.xpath("./td[1]/a");
-        private final By frEmailLctr = By.xpath("./td[2]/a");
+        private final By adEmailLctr = By.xpath("./td[2]/span");
+        private final By frEmailLctr = By.xpath("./td[3]/span");
         private final By apprroveActionBtnLctr = By.xpath(".//div[@class='CSP-row-actions-buttons']/div[1]/button");
         private final By voidActionBtnLctr = By.xpath(".//div[@class='CSP-row-actions-buttons']/div[2]/button");
 

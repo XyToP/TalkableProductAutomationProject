@@ -1,22 +1,25 @@
 package talkable.common.elements.alert;
 
 import abstractObjects.AbstractElementsContainer;
-import org.openqa.selenium.WebDriver;
-import util.DriverConfig;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import util.WaitFactory;
 import util.logging.Log;
 
 public class Alert extends AbstractElementsContainer {
 
-    protected WebDriver driver = new DriverConfig().getDriver();
     private org.openqa.selenium.Alert alert;
 
     public Alert(){
-        alert = driver.switchTo().alert();
+        alert = WaitFactory
+                .getCustomWait(3, 500)
+                .until(ExpectedConditions.alertIsPresent()
+                );
     }
 
     public void confirm(){
+        String alertMsg = alert.getText();
         alert.accept();
-        Log.alertAccepted();
+        Log.logRecord("Click OK in Alert with message <" + alertMsg + ">.");
     }
 
 }

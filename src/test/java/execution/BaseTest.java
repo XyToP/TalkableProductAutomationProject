@@ -12,7 +12,7 @@ public class BaseTest {
         public WebDriver driver;
 
         //setup driver and open Talkable site.
-        @BeforeSuite
+        @BeforeClass
         public void commonSetup() {
             Log.logRecord("Class name: " + this.getClass().getName());
             this.driver = DriverConfig.getDriver();
@@ -26,19 +26,18 @@ public class BaseTest {
                 this.driver.navigate().to(EnvFactory.getEnvUrl());
                 Log.logRecord("Successfully opened URL from the second attempt");
             }
-            System.out.println("*** DEBAG: Before suite executed in Base Test of class: " + getClass().getName() + " ***\r\n");
+            System.out.println("*** DEBAG: Before class executed in Base Test of class: " + getClass().getName() + " ***\r\n");
         }
 
 
-
-        @BeforeClass
-        public void verifyDriver() {
-            if(driver==null){
-                commonSetup();
-                System.out.println("DEBAG: WebDriver assigned for particular class: " + getClass().getName());
-            }
-
-        }
+//        @BeforeClass
+//        public void verifyDriver() {
+//            if(driver==null){
+//                commonSetup();
+//                System.out.println("DEBAG: WebDriver assigned for particular class: " + getClass().getName());
+//            }
+//
+//        }
 
 
          @BeforeMethod(alwaysRun = true)
@@ -58,20 +57,11 @@ public class BaseTest {
 ////            }
 //        }
 
-      @AfterSuite
+      @AfterClass
         public void quit() {
             this.driver.quit();
             DriverConfig.cleanWebDriver();
-            System.out.println("*** DEBAG: After Suite executed in Base Test of class: " + getClass().getName() + " ***\r\n");
-        }
-
-
-        public String printAssertMsg(String msg){
-            String screnshotPath = new Screenshot().makeScreenshot();
-            return "FAILED: " + msg + ".\r\n" +
-                    "Test failed on URL: " + DriverConfig.getDriver().getCurrentUrl() +"\r\n" +
-                    "Screenshot: " + screnshotPath
-                    ;
+            System.out.println("*** DEBAG: After Class executed in Base Test of class: " + getClass().getName() + " ***\r\n");
         }
     }
 

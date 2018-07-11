@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
+@Deprecated
 public class TestDataConverter {
     private static final String testDataFolderPath = "src/main/resources/testData/DDT.data/";     //"C:\\SeleniumTests\\SVN folder\\src\\test\\resources\\testData\\dataProvider.txt";
     private StringBuilder out = new StringBuilder();

@@ -1,0 +1,8 @@
+<suite name="Integration Tests" preserve-order="true" group-by-instances="true">
+    <test name="Shopify Integration" preserve-order="true" >
+        <classes>
+            <class name="execution.integration.shopify.ShopifyIntegrationTest"/>
+        </classes>
+    </test>
+</suite>
+

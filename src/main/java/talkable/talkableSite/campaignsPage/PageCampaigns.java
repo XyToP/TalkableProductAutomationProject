@@ -51,7 +51,8 @@ public class PageCampaigns extends AbstractTalkableSitePage {
             ArrayList<Table.Row> campaigns = getCampaignsTable(LIVE).getAllRows();
             for (Table.Row row :
                     campaigns) {
-                String campaignName = row.name.getText();
+//                String campaignName = row.name.getText();
+                String campaignName = row.getName();
                 row.deactivate();
                 waitDeactivation();
                 Log.campaignDeactivated(campaignName);
@@ -73,7 +74,8 @@ public class PageCampaigns extends AbstractTalkableSitePage {
         System.out.println("DEBAG: Found " + count + " campaign for deletion");
         for(int i = 0; i < count; i++){
             Table.Row row = table.getAllRows().get(0);
-            String campaignName = row.name.getText();
+//            String campaignName = row.name.getText();
+            String campaignName = row.getName();
             row.delete();
             waitDeletion();
             Log.campaignDeleted(campaignName);

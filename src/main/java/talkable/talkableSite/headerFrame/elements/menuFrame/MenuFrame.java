@@ -1,6 +1,7 @@
 package talkable.talkableSite.headerFrame.elements.menuFrame;
 
 import abstractObjects.AbstractElementsContainer;
+import abstractObjects.Element;
 import org.openqa.selenium.By;
 import org.testng.Assert;
 import talkable.addYourSitePage.AddSitePage;
@@ -8,10 +9,12 @@ import talkable.homePage.HomePage;
 import talkable.talkableSite.camapignPlacements.PageCampaignPlacements;
 import talkable.talkableSite.createNewCampaignPage.CreateNewCampaignPage;
 import talkable.talkableSite.fraud.settings.FraudSettingsPage;
+import talkable.talkableSite.integrationPage.IntegrationPage;
 import talkable.talkableSite.siteSettings.basic.SiteSettingsBasicTab;
 
 public class MenuFrame extends AbstractElementsContainer {
 
+    private static final By integrationBtnLctr = By.xpath("//ul[contains(@class, 'base-dropdown')]//*[contains(text(),'Integration')]");
     private static final By menuIsOpenedElement = By.cssSelector(".dropdown.open");
     private ElmntLogoutButton logoutButton;
 
@@ -57,6 +60,11 @@ public class MenuFrame extends AbstractElementsContainer {
     public SiteSettingsBasicTab clickSiteSettings(){
         new ElmntSiteSettingsButton().click();
         return new SiteSettingsBasicTab();
+    }
+
+    public IntegrationPage clickIntegration(){
+        new Element(integrationBtnLctr, "Integration button").click();
+        return new IntegrationPage();
     }
 
 

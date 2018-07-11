@@ -16,14 +16,12 @@ import util.EnvFactory;
 import util.PropertyLoader;
 import util.logging.Log;
 
-import static talkable.common.CampaignPlacement.FloatingWidget;
-
 
 public class BasePlacementsTest extends BaseTest{
 
 //    private static final String siteName = PropertyLoader.loadProperty("sites.name.campaign.placements.test");
     protected static final String SITE_URL = PropertyLoader.loadEnvProperty("test.sites.campaign.placements");
-    protected static final String USER_EMAIL = PropertyLoader.loadProperty("user.login.campaign.placements");
+    protected static final String USER_EMAIL = PropertyLoader.loadProperty("talkable.user.campaign.placements");
 
     static final String page1 = "index.html";
     static final String page2 = "page2.html";

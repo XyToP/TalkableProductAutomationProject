@@ -8,7 +8,7 @@ public class SiteSettingsContactsTab extends SiteSettingsPage {
     //Page Elements
     private static final By elmntCSEmail = By.xpath("//*[@name = 'customer_service_email']");
     private static final By elmntCSName = By.xpath("//*[@name = 'customer_service_name']");
-    private static final By elmntTechnicalEmail = By.xpath("//*[@name = 'site-technical-contact-email']");
+    private static final By elmntTechnicalEmail = By.xpath("//*[@name = 'technical_contact_email']");
     private static final By elmntCheckboxIntegrationError = By.xpath("//*[@for='site-ignore-failed-transactions']");
     private static final By elmntRewardEmail = By.xpath("//*[@name='reward_contact_email']");
     private static final By elmntMarketerEmail = By.xpath("//*[@name='marketer_contact_email']");
@@ -24,7 +24,7 @@ public class SiteSettingsContactsTab extends SiteSettingsPage {
         new Element(elmntCheckboxWeeklyPerformanceReport);
     }
 
-    //Geters
+    //Getters
     public String getCSEmail(){
         return new Element(elmntCSEmail).getAttribute("value");
     }

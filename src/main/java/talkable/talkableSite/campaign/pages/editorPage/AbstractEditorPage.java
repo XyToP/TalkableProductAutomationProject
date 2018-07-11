@@ -5,33 +5,58 @@ import org.openqa.selenium.By;
 import talkable.common.elements.alert.Alert;
 import talkable.talkableSite.AbstractTkblSitePageWithoutHeader;
 import talkable.talkableSite.campaign.pages.campaignNavigationMenu.CampaignNavigationMenuOnEditor;
+import util.WaitFactory;
 import util.logging.Log;
 
 public class AbstractEditorPage extends AbstractTkblSitePageWithoutHeader
 {
     private static final By presetDropDownBtnLctr = By.xpath("//*[@data-editor-toggle = 'presets']");
     private static final By presetWasRemovedMsg = By.xpath("//*[contains(text(), 'Preset was removed')]");
+    private static final By htmlEditorBtnLctr = By.xpath("//li[@class='subnav-actions-toggler']//a[contains(text(), 'HTML')]");
+//    private static final By previewFrameLctr = By.xpath("//iframe[contains(@class, 'cover-iframe')]");
+    private static final By selectedViewFieldLctr = By.cssSelector(".editor-view-setup-switcher span");
+    private static final By emailSubjectInPreview = By.xpath("//*[@class ='editor-preview-data-bottom-part']//*[contains(text(), 'Subject')]/following::span[contains(@class, 'preview-data-text')]");
+
+
     public CampaignNavigationMenuOnEditor campaignNavigationMenu = new CampaignNavigationMenuOnEditor();
-    private ElmntSelectedViewField elmntSelectedViewField = new ElmntSelectedViewField();
+    Element elmntSelectedViewField = new Element(selectedViewFieldLctr, "Selected View field");
+    private PreviewFrame previewFrame = new PreviewFrame();
+//    private Element previewIFrame = new Element(previewFrameLctr);
 
     void switchViewByName(String name){
         if(isViewSelected(name)) {
             System.out.println("DEBAG: View <" + name + "> is already selected");
         }else{
-            elmntSelectedViewField.click();
-            new ContainerViewRecords().selectViewByText(name);
+            openViewList().selectViewByText(name);
             System.out.println("DEBAG: View changed to : " + name);
         }
     }
 
-    //    public SimpleEditorPage switchViewByIndex(int index){
-//        elmntSelectedViewField.click();
-//        new ContainerViewRecords().selectByIndex(index);
-//        return new SimpleEditorPage();
-//    }
+    public AbstractEditorPage switchView(String viewName){
+        switchViewByName(viewName);
+        WaitFactory.waitUntilTextToBePresentInElement(selectedViewFieldLctr, viewName, 4);
+        Log.logRecord("View switched to <" + viewName + ">.");
+        return new AbstractEditorPage();
+    }
+
+    ContainerViewRecords openViewList(){
+        elmntSelectedViewField.click();
+        return new ContainerViewRecords();
+    }
+
+
+
+    public HtmlEditorPage openHtmlEditor(){
+        new Element(htmlEditorBtnLctr, "HTML & CSS tab").click();
+        return new HtmlEditorPage();
+    }
 
     private boolean isViewSelected(String toBeSelected){
-        return elmntSelectedViewField.getText().equals(toBeSelected);
+        return getSelectedViewName().equals(toBeSelected);
+    }
+
+    public String getSelectedViewName(){
+        return elmntSelectedViewField.getText();
     }
 
     public ViewPresetFrame openPresetDropDown(){
@@ -85,5 +110,18 @@ public class AbstractEditorPage extends AbstractTkblSitePageWithoutHeader
             Log.logRecord("View Preset with name <" + presetName + "> is not available in the preset drop down in Editor");
             return false;
         }
+    }
+
+    public boolean isViewPresent(String viewName){
+       return openViewList()
+               .isViewPresent(viewName);
+    }
+
+    public String getElementTextFromPreviewFrame(By locator){
+        return previewFrame.getElementText(locator);
+    }
+
+    public String getEmailSubjectFromPreview(){
+        return new Element(emailSubjectInPreview).getText();
     }
 }
